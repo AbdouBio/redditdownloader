@@ -43,4 +43,55 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayError(message) {
         errorElement.textContent = message;
     }
+    
+    // Add the new code for Reddit API authentication here
+
+    const clientId = 'bibenmerch'; // Replace with your Reddit API client ID
+    const clientSecret = 'xdE1WorHz6KJIVETNUYq8VIsxN7u7w'; // Replace with your Reddit API client secret
+    const redditApiUrl = 'https://www.reddit.com/api/v1/access_token';
+
+    // Function to authenticate and get an access token
+    async function getAccessToken() {
+        const authHeader = btoa(`${clientId}:${clientSecret}`);
+        const requestBody = 'grant_type=client_credentials';
+
+        try {
+            const response = await fetch(redditApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${authHeader}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: requestBody,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to authenticate with Reddit API');
+            }
+
+            const data = await response.json();
+            return data.access_token;
+        } catch (error) {
+            console.error('Authentication Error:', error);
+            throw error;
+        }
+    }
+
+    // Use the access token to make authenticated Reddit API requests
+    async function fetchRedditData() {
+        try {
+            const accessToken = await getAccessToken();
+            // Use the access token in your API requests to Reddit
+            // For example, you can append it as a query parameter or use it in headers
+            const redditApiUrl = `https://www.reddit.com/api_endpoint?access_token=${accessToken}`;
+            const response = await fetch(redditApiUrl);
+            // Handle the Reddit API response as needed
+        } catch (error) {
+            // Handle any errors that occur during authentication or API requests
+            console.error('Error:', error);
+        }
+    }
+
+    // Call fetchRedditData() when your button is clicked
+    document.getElementById('fetchButton').addEventListener('click', fetchRedditData);
 });
