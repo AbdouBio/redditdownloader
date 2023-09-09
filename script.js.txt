@@ -1,41 +1,46 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Event listener for the "Download Media" button
+document.addEventListener("DOMContentLoaded", function () {
     const fetchButton = document.getElementById("fetchButton");
-    fetchButton.addEventListener("click", async function() {
-        const redditLink = document.getElementById("redditLink").value;
-        
-        if (isValidRedditLink(redditLink)) {
-            try {
-                const response = await fetch(redditLink);
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data = await response.json();
-                
-                // Display the fetched content in the "mediaContainer" div
-                const mediaContainer = document.getElementById("mediaContainer");
-                mediaContainer.innerHTML = JSON.stringify(data, null, 2); // Display JSON data
-                
-                // Clear any previous error messages
-                const errorElement = document.getElementById("error");
-                errorElement.textContent = "";
-            } catch (error) {
-                displayError("An error occurred while fetching content.");
-                console.error("Error:", error);
+    const redditLink = document.getElementById("redditLink");
+    const mediaContainer = document.getElementById("mediaContainer");
+    const errorElement = document.getElementById("error");
+
+    fetchButton.addEventListener("click", async function () {
+        const link = redditLink.value.trim();
+
+        if (!link) {
+            displayError("Please enter a Reddit post URL.");
+            return;
+        }
+
+        if (!isValidRedditLink(link)) {
+            displayError("Invalid Reddit post link. Please enter a valid Reddit post URL.");
+            return;
+        }
+
+        try {
+            const response = await fetch(link);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
             }
-        } else {
-            alert("Invalid Reddit post link. Please enter a valid Reddit post URL.");
+            const data = await response.json();
+
+            // Display the fetched content in the "mediaContainer" div
+            mediaContainer.innerHTML = JSON.stringify(data, null, 2);
+
+            // Clear any previous error messages
+            errorElement.textContent = "";
+        } catch (error) {
+            displayError("An error occurred while fetching content.");
+            console.error("Error:", error);
         }
     });
+
+    function isValidRedditLink(link) {
+        const redditLinkRegex = /^https?:\/\/(www\.)?reddit\.com\/r\/[^\/]+\/comments\/[a-z0-9]+\/.*/i;
+        return redditLinkRegex.test(link);
+    }
+
+    function displayError(message) {
+        errorElement.textContent = message;
+    }
 });
-
-function isValidRedditLink(link) {
-    // Regular expression to match Reddit post links
-    const redditLinkRegex = /^https?:\/\/(www\.)?reddit\.com\/r\/[^\/]+\/comments\/[a-z0-9]+\/.*/i;
-    return redditLinkRegex.test(link);
-}
-
-function displayError(message) {
-    const errorElement = document.getElementById("error");
-    errorElement.textContent = message;
-}
