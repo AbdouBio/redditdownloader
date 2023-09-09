@@ -1,55 +1,41 @@
-document.getElementById('fetchButton').addEventListener('click', function () {
-    const subreddit = "YOUR_SUBREDDIT_NAME"; // Replace with the subreddit you want to fetch content from.
-    const redditUrl = `https://www.reddit.com/r/${subreddit}.json`;
-
-    fetch(redditUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+document.addEventListener("DOMContentLoaded", function() {
+    // Event listener for the "Download Media" button
+    const fetchButton = document.getElementById("fetchButton");
+    fetchButton.addEventListener("click", async function() {
+        const redditLink = document.getElementById("redditLink").value;
+        
+        if (isValidRedditLink(redditLink)) {
+            try {
+                const response = await fetch(redditLink);
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const data = await response.json();
+                
+                // Display the fetched content in the "mediaContainer" div
+                const mediaContainer = document.getElementById("mediaContainer");
+                mediaContainer.innerHTML = JSON.stringify(data, null, 2); // Display JSON data
+                
+                // Clear any previous error messages
+                const errorElement = document.getElementById("error");
+                errorElement.textContent = "";
+            } catch (error) {
+                displayError("An error occurred while fetching content.");
+                console.error("Error:", error);
             }
-            return response.json();
-        })
-        .then(data => {
-            const redditContentElement = document.getElementById('redditContent');
-            redditContentElement.innerHTML = ''; // Clear existing content
-
-            data.data.children.forEach(post => {
-                const title = post.data.title;
-                const titleElement = document.createElement('p');
-                titleElement.textContent = title;
-                redditContentElement.appendChild(titleElement);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        } else {
+            alert("Invalid Reddit post link. Please enter a valid Reddit post URL.");
+        }
+    });
 });
+
 function isValidRedditLink(link) {
-  // Regular expression to match Reddit post links
-  const redditLinkRegex = /^https?:\/\/(www\.)?reddit\.com\/r\/[^\/]+\/comments\/[a-z0-9]+\/.*/i;
-  
-  return redditLinkRegex.test(link);
+    // Regular expression to match Reddit post links
+    const redditLinkRegex = /^https?:\/\/(www\.)?reddit\.com\/r\/[^\/]+\/comments\/[a-z0-9]+\/.*/i;
+    return redditLinkRegex.test(link);
 }
-
-document.getElementById('fetchButton').addEventListener('click', function () {
-  const redditLink = document.getElementById('redditLink').value;
-
-  if (isValidRedditLink(redditLink)) {
-    // Valid Reddit link, proceed with fetching content
-    // ...
-  } else {
-    alert('Invalid Reddit post link. Please enter a valid Reddit post URL.');
-  }
-});
-// Inside your JavaScript code
-const errorElement = document.getElementById('error');
 
 function displayError(message) {
-  errorElement.textContent = message;
+    const errorElement = document.getElementById("error");
+    errorElement.textContent = message;
 }
-
-// In the click event listener
-.catch(error => {
-  displayError('An error occurred while fetching content.');
-  console.error('Error:', error);
-});
