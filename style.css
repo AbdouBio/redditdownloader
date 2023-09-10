@@ -5,15 +5,10 @@
   box-sizing: border-box;
 }
 
-/* Body styles with background image */
+/* Body styles without background image */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f0f0f0;
-  background-image: url('background-image.jpg'); /* Replace with your image path */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center center;
   color: #333;
 }
 
@@ -132,15 +127,4 @@ footer {
   padding: 20px 0;
   font-size: 18px;
   border-top: 4px solid #0074e4;
-}
-
-/* Additional styles for media items (images, videos) */
-#mediaContainer img,
-#mediaContainer video {
-  max-width: 100%;
-  height: auto;
-  margin: 20px auto;
-  display: block;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
