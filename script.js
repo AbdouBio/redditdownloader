@@ -4,6 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const mediaContainer = document.getElementById("mediaContainer");
   const errorElement = document.getElementById("error");
 
+  // Define your Reddit API credentials
+  const clientId = "nx5989FajF9Z0f3MDAi9Tw";
+  const clientSecret = "xdE1WorHz6KJIVETNUYq8VIsxN7u7w";
+  const basicAuth = btoa(`${clientId}:${clientSecret}`);
+
   fetchButton.addEventListener("click", async function () {
     const link = redditLink.value.trim();
 
@@ -18,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-      const mediaData = await fetchRedditMedia(link);
+      const mediaData = await fetchRedditMedia(link, basicAuth);
 
       if (mediaData) {
         // Display the downloaded media content
@@ -38,11 +43,16 @@ document.addEventListener("DOMContentLoaded", function () {
     return redditLinkRegex.test(link);
   }
 
-  async function fetchRedditMedia(link) {
-    const redditApiUrl = `https://www.reddit.com/api/info.json?url=${link}`;
+  async function fetchRedditMedia(link, basicAuth) {
+    const redditApiUrl = `https://oauth.reddit.com/api/info.json?url=${link}`;
     
     try {
-      const response = await fetch(redditApiUrl);
+      const response = await fetch(redditApiUrl, {
+        headers: {
+          Authorization: `Basic ${basicAuth}`,
+          "User-Agent": "YourApp/1.0" // Provide a user-agent for your app
+        }
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch media data from Reddit API");
